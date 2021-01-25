@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MoviesApp.Data.Models;
 
 namespace MoviesApp.Repositories
 {
@@ -36,6 +37,7 @@ namespace MoviesApp.Repositories
                 Actors = movie.MovieActors
                     .Select(ma => ma.Actor)
                     .Select(a => $"{a.FirstName} {a.LastName}")
+                    .OrderBy(x => x)
                     .ToArray()
             };
         }
@@ -57,8 +59,39 @@ namespace MoviesApp.Repositories
                 Actors = x.MovieActors
                     .Select(ma => ma.Actor)
                     .Select(a => $"{a.FirstName} {a.LastName}")
+                    .OrderBy(x => x)
                     .ToArray()
             });
+        }
+
+        public async Task<Guid> AddAsync(MovieDto dto)
+        {
+            var movie = new Movie
+            {
+                Id = Guid.NewGuid(),
+                Title = dto.Title,
+                Year = dto.Year,
+                Plot = dto.Plot
+            };
+            await _context.Movies.AddAsync(movie);
+
+            var actors = dto.Actors.Select(x => new Actor
+            {
+                Id = Guid.NewGuid(),
+                FirstName = x.Split(" ").FirstOrDefault(),
+                LastName = x.Split(" ").LastOrDefault()
+            }).ToArray();
+            await _context.Actors.AddRangeAsync(actors);
+
+            var movieActors = actors.Select(x => new MovieActor
+            {
+                ActorId = x.Id,
+                MovieId = movie.Id
+            }).ToArray();
+            await _context.MovieActors.AddRangeAsync(movieActors);
+            await _context.SaveChangesAsync();
+
+            return movie.Id;
         }
     }
 }

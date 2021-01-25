@@ -24,5 +24,10 @@ namespace MoviesApp.Services
         {
             return _repository.GetAsync();
         }
+
+        public Task<Guid> AddAsync(MovieDto dto)
+        {
+            return _repository.AddAsync(dto);
+        }
     }
 }

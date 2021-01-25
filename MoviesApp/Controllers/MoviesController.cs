@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MoviesApp.Dtos;
 using MoviesApp.Services;
 
 namespace MoviesApp.Controllers
@@ -27,6 +28,13 @@ namespace MoviesApp.Controllers
         public async Task<IActionResult> Get(Guid id)
         {
             var response = await _service.GetByIdAsync(id);
+            return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(MovieDto dto)
+        {
+            var response = await _service.AddAsync(dto);
             return Ok(response);
         }
     }

@@ -13,5 +13,8 @@ namespace MoviesApp.IntegrationTests
 
         [Get("/movies")]
         Task<IEnumerable<MovieDto>> GetAsync();
+
+        [Post("/movies")]
+        Task<Guid> AddAsync(MovieDto dto);
     }
 }
